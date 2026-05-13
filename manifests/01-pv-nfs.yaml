@@ -20,5 +20,5 @@ spec:
     name: static-nfs-pvc-demo
   nfs:
     # Altere apenas estes campos para simular a troca do servidor NFS via Git.
-    server: 10.0.0.10
+    server: 10.10.74.178
     path: /exports/ocp-static-nfs-pv-demo
