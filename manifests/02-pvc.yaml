@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: static-nfs-pvc-demo
+  namespace: nfs-static-pv-demo
+  labels:
+    app.kubernetes.io/name: nfs-static-pv-demo
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  volumeName: static-nfs-pv-demo
+  resources:
+    requests:
+      storage: 5Gi

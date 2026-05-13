@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nfs-pv-writer
+  namespace: nfs-static-pv-demo
+  labels:
+    app.kubernetes.io/name: nfs-pv-writer
+spec:
+  selector:
+    app.kubernetes.io/name: nfs-pv-writer
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP

@@ -1,0 +1,13 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: nfs-pv-writer
+  namespace: nfs-static-pv-demo
+  labels:
+    app.kubernetes.io/name: nfs-pv-writer
+spec:
+  to:
+    kind: Service
+    name: nfs-pv-writer
+  port:
+    targetPort: http

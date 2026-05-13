@@ -1,0 +1,47 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nfs-pv-data-generator
+  namespace: nfs-static-pv-demo
+  labels:
+    app.kubernetes.io/name: nfs-pv-data-generator
+    app.kubernetes.io/part-of: nfs-static-pv-demo
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: nfs-pv-data-generator
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: generator
+          image: registry.access.redhat.com/ubi9/ubi:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -euo pipefail
+              mkdir -p /data/generated
+              echo "Job started at $(date -Iseconds)" | tee -a /data/job-history.log
+              for i in $(seq 1 10); do
+                file="/data/generated/job-file-${i}-$(date +%s).txt"
+                {
+                  echo "file=${file}"
+                  echo "created_at=$(date -Iseconds)"
+                  echo "hostname=${HOSTNAME}"
+                  base64 /dev/urandom | head -c 65536
+                  echo
+                } > "$file"
+                sha256sum "$file" | tee -a /data/checksums.txt
+              done
+              echo "Job completed at $(date -Iseconds)" | tee -a /data/job-history.log
+              find /data -maxdepth 3 -type f -printf '%p %s bytes\n' | sort
+          volumeMounts:
+            - name: nfs-data
+              mountPath: /data
+      volumes:
+        - name: nfs-data
+          persistentVolumeClaim:
+            claimName: static-nfs-pvc-demo
